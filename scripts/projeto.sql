@@ -135,3 +135,41 @@ INSERT INTO matricula_turma VALUES
 (2025010,7,6.4),(2025010,8,7.1),
 (2025011,9,8.8),(2025011,10,7.9),
 (2025012,11,5.5),(2025012,12,6.3);
+
+
+
+SELECT a.nome, d.nome AS disciplina, t.ciclo
+FROM academico.aluno a
+JOIN academico.matricula m ON a.id_aluno = m.id_aluno
+JOIN academico.turma t ON m.id_turma = t.id_turma
+JOIN academico.disciplina d ON t.id_disciplina = d.id_disciplina
+WHERE t.ciclo = '2026/1';
+
+-- Baixo desempenho
+SELECT d.nome, AVG(m.nota) AS media
+FROM academico.matricula m
+JOIN academico.turma t ON m.id_turma = t.id_turma
+JOIN academico.disciplina d ON t.id_disciplina = d.id_disciplina
+GROUP BY d.nome
+HAVING AVG(m.nota) < 6.0;
+
+-- Docentes
+SELECT p.nome, d.nome AS disciplina
+FROM academico.professor p
+LEFT JOIN academico.turma t ON p.id_professor = t.id_professor
+LEFT JOIN academico.disciplina d ON t.id_disciplina = d.id_disciplina;
+
+-- Melhor aluno em Banco de Dados
+SELECT a.nome, m.nota
+FROM academico.aluno a
+JOIN academico.matricula m ON a.id_aluno = m.id_aluno
+JOIN academico.turma t ON m.id_turma = t.id_turma
+JOIN academico.disciplina d ON t.id_disciplina = d.id_disciplina
+WHERE d.nome = 'Banco de Dados'
+AND m.nota = (
+    SELECT MAX(m2.nota)
+    FROM academico.matricula m2
+    JOIN academico.turma t2 ON m2.id_turma = t2.id_turma
+    JOIN academico.disciplina d2 ON t2.id_disciplina = d2.id_disciplina
+    WHERE d2.nome = 'Banco de Dados'
+);
